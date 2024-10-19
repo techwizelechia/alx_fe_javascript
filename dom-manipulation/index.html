@@ -15,6 +15,13 @@
   <button id="newQuote">Show New Quote</button>
   <button id="exportJson">Export Quotes as JSON</button>
   <button id="exportJson">Export Quotes as JSON</button>
+
+  <!-- Dropdown menu for category filtering -->
+<select id="categoryFilter" onchange="filterQuotes()">
+  <option value="all">All Categories</option>
+  <!-- Categories will be populated dynamically -->
+</select>
+
   <!-- Form to add new quotes -->
   <div>
     <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
