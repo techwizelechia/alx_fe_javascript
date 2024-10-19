@@ -37,3 +37,40 @@ let quotes = [
   // Event listener to add a new quote when the button is clicked
   document.getElementById('addQuoteButton').addEventListener('click', addQuote);
 
+// Load quotes from local storage if available
+function loadQuotes() {
+  const storedQuotes = localStorage.getItem('quotes');
+  if (storedQuotes) {
+    quotes = JSON.parse(storedQuotes);
+  }
+}
+
+// Save quotes to local storage
+function saveQuotes() {
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+}
+
+// Function to add a new quote and save to local storage
+function addQuote() {
+  const newQuoteText = document.getElementById('newQuoteText').value;
+  const newQuoteCategory = document.getElementById('newQuoteCategory').value;
+
+  if (newQuoteText && newQuoteCategory) {
+    quotes.push({ text: newQuoteText, category: newQuoteCategory });
+    saveQuotes(); // Save to local storage
+    alert("New quote added!");
+    
+    // Clear input fields
+    document.getElementById('newQuoteText').value = '';
+    document.getElementById('newQuoteCategory').value = '';
+  } else {
+    alert("Please enter both quote text and category.");
+  }
+}
+
+// Initialize the app and load quotes from local storage
+window.onload = function() {
+  loadQuotes();
+  document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+  document.getElementById('addQuoteButton').addEventListener('click', addQuote);
+};
