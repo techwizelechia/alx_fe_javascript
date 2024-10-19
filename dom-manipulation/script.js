@@ -184,3 +184,77 @@ function addQuote() {
     alert("Please enter both quote text and category.");
   }
 }
+
+// Simulate fetching quotes from a server (using JSONPlaceholder or similar)
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts'); // Replace with real API if needed
+    const serverQuotes = await response.json();
+    
+    // Simulate transforming server data to fit your quote structure
+    const transformedQuotes = serverQuotes.map(quote => ({
+      text: quote.title,
+      category: 'Server' // Assign a default or random category
+    }));
+
+    return transformedQuotes;
+  } catch (error) {
+    console.error('Error fetching quotes from server:', error);
+    return [];
+  }
+}
+
+// Fetch quotes periodically (every 30 seconds)
+setInterval(async () => {
+  const serverQuotes = await fetchQuotesFromServer();
+  handleServerDataSync(serverQuotes);
+}, 30000); // 30 seconds
+function handleServerDataSync(serverQuotes) {
+  // Fetch local quotes from localStorage
+  const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+  // Find discrepancies and update local quotes with server data (server data takes precedence)
+  serverQuotes.forEach(serverQuote => {
+    if (!localQuotes.find(quote => quote.text === serverQuote.text)) {
+      localQuotes.push(serverQuote); // Add new server quote to local data
+    }
+  });
+
+  // Save the updated quotes back to localStorage
+  localStorage.setItem('quotes', JSON.stringify(localQuotes));
+
+  // Update the displayed quotes in the DOM
+  displayQuotes(localQuotes);
+}
+// Function to notify user about conflicts or updates
+function notifyUser(message) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+
+  // Remove notification after a few seconds
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 5000);
+}
+
+// Update the sync function to notify the user
+function handleServerDataSync(serverQuotes) {
+  const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+  let conflictDetected = false;
+
+  serverQuotes.forEach(serverQuote => {
+    if (!localQuotes.find(quote => quote.text === serverQuote.text)) {
+      localQuotes.push(serverQuote); // Add new quote
+      conflictDetected = true;
+    }
+  });
+
+  if (conflictDetected) {
+    notifyUser('New quotes from the server have been added!');
+  }
+
+  localStorage.setItem('quotes', JSON.stringify(localQuotes));
+  displayQuotes(localQuotes);
+}
